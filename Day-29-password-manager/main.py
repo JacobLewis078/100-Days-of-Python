@@ -30,6 +30,10 @@ def generate_password():
                                           k=number))
     new_password.set(random_password)
     password_input.config(textvariable=new_password)
+    # copies password generated to clipboard to easily paste in webpage.
+    new_password_text = new_password.get()
+    window.clipboard_clear()
+    window.clipboard_append(new_password_text)
 
 
 # ---------------------------- SAVE PASSWORD ------------------------------- #
