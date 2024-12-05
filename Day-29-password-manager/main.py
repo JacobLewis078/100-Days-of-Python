@@ -36,6 +36,7 @@ def generate_password():
 # Saves Website, email/username, and password that was entered by the user into the file .my_file.txt
 #.my_file.txt is hidden to enhance security
 def save_password():
+    success()
     with open(PASSWORD_FILE, "a") as file:
         file.write(f"{website_input.get()} | {email_username_input.get()} {password_input.get()}\n")
 
@@ -52,14 +53,14 @@ def save_password():
 # --------------------------- Success Dialog Box -------------------------- #
 # This is the dialog box that pops up when the end user clicks the add button to let them know the password was saved successfully
 def success():
-    popup = Tk()
+    popup = Toplevel(window)
     popup.title("Success")
-    popup.config(padx=10, pady=10)
+    popup.geometry("250x65+300+200")
 
-    success_label = Label(font=Font, text=f"Password successfully added to {PASSWORD_FILE}")
-    success_label.grid(popup, column = 1, row = 1)
-    success_button = Button(text="Done", command=popup.destroy)
-    success_button.grid(popup, column=1, row=2)
+    success_label = Label(popup, font=FONT, text=f"Password successfully added to {PASSWORD_FILE}")
+    success_label.grid(column = 0, row = 0)
+    success_button = Button(popup, text="Done", command=popup.destroy)
+    success_button.grid(column=0, row=1)
 
 # ---------------------------- UI SETUP ------------------------------- #
 window = Tk()
