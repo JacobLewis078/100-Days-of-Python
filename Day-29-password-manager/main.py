@@ -54,9 +54,12 @@ def save_password():
 def success():
     popup = Tk()
     popup.title("Success")
+    popup.config(padx=10, pady=10)
 
     success_label = Label(font=Font, text=f"Password successfully added to {PASSWORD_FILE}")
-    success_button = Button(text="Done") ## need to close out the dialog box when button is clicked. 
+    success_label.grid(popup, column = 1, row = 1)
+    success_button = Button(text="Done", command=popup.destroy)
+    success_button.grid(popup, column=1, row=2)
 
 # ---------------------------- UI SETUP ------------------------------- #
 window = Tk()
