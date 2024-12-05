@@ -3,6 +3,7 @@ import random
 import string
 
 FONT = ("Arial", 12)
+PASSWORD_FILE = ".my_file_txt"
 
 # ----------------------- Password Length -------------------------------- #
 # allows user to choose number of characters desired for password
@@ -35,7 +36,7 @@ def generate_password():
 # Saves Website, email/username, and password that was entered by the user into the file .my_file.txt
 #.my_file.txt is hidden to enhance security
 def save_password():
-    with open(".my_file.txt", "a") as file:
+    with open(PASSWORD_FILE, "a") as file:
         file.write(f"{website_input.get()} | {email_username_input.get()} {password_input.get()}\n")
 
     website_input.delete(0, END)
@@ -47,6 +48,15 @@ def save_password():
 # # --------------------Change Slider Variable --------------------------- #
 # def slider_variable(value):
 #     length_label.config(text=value)
+
+# --------------------------- Success Dialog Box -------------------------- #
+# This is the dialog box that pops up when the end user clicks the add button to let them know the password was saved successfully
+def success():
+    popup = Tk()
+    popup.title("Success")
+
+    success_label = Label(font=Font, text=f"Password successfully added to {PASSWORD_FILE}")
+    success_button = Button(text="Done") ## need to close out the dialog box when button is clicked. 
 
 # ---------------------------- UI SETUP ------------------------------- #
 window = Tk()
