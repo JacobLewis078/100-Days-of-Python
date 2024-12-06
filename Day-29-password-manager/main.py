@@ -1,58 +1,84 @@
+import os
 from tkinter import *
 import random
 import string
+import json
 
 FONT = ("Arial", 12)
-PASSWORD_FILE = ".my_file_txt"
+PASSWORD_FILE = "data.json"
 
-# ----------------------- Password Length -------------------------------- #
-# allows user to choose number of characters desired for password
-def password_length():
-    popup = Tk()
-    popup.title("Password Length")
-    popup.config(pady=50, padx=50)
+# ------------------------- Check for data.json file --------------------------- #
+if not os.path.exists(PASSWORD_FILE):
+    with open(PASSWORD_FILE, "w") as data_file:
+        json.dump({}, data_file)
 
 
-    number_text = Label(popup, text="Enter Desired Password Length:")
-    number_text.grid(column=1,row=1)
+# ---------------------------- Search JSON file for login information -------------#
+def search_database():
+    searched_key = website_input.get()
 
-    entered_number = IntVar()
-    number = Entry(popup, textvariable=entered_number)
-    number.grid(column=2,row=2)
+    with open(PASSWORD_FILE, "r") as data_file:
+        data = json.load(data_file)
 
+    for key in data:
+        if searched_key == key:
+            win = Toplevel(window)
+            win.title("Login Information")
+            win.geometry("400x200+300+200")
+
+            email_retrieved = Label(win, font=FONT, text=f"Email: {data[searched_key]['email']}")
+            email_retrieved.grid(column=1, row=1)
+            password_retrieved = Label(win, font=FONT, text=f"Password: {data[searched_key]['password']}")
+            password_retrieved.grid(column=1, row=2)
+        else:
+            return
 
 # ---------------------------- PASSWORD GENERATOR ------------------------------- #
 # generates a random password that is 16 characters long for user to use when signing up for a website
 def generate_password():
     number = int(length_input.get())
-    new_password = StringVar()
+
+    if number <= 0:
+        return
+
     random_password = ''.join(random.choices(string.ascii_letters + string.punctuation + string.digits,
                                           k=number))
-    new_password.set(random_password)
-    password_input.config(textvariable=new_password)
+    password_text.set(random_password)
+
     # copies password generated to clipboard to easily paste in webpage.
-    new_password_text = new_password.get()
     window.clipboard_clear()
-    window.clipboard_append(new_password_text)
+    window.clipboard_append(random_password)
 
 
 # ---------------------------- SAVE PASSWORD ------------------------------- #
-# Saves Website, email/username, and password that was entered by the user into the file .my_file.txt
-#.my_file.txt is hidden to enhance security
+# Saves Website, email/username, and password that was entered by the user into the file data.json
 def save_password():
-    success()
-    with open(PASSWORD_FILE, "a") as file:
-        file.write(f"{website_input.get()} | {email_username_input.get()} {password_input.get()}\n")
+    try:
+        with open(PASSWORD_FILE, "r") as data_file:
+            data = json.load(data_file)
+    except (FileNotFoundError, json.JSONDecodeError):
+        data = {}
 
+    # Put the new string values into a JSON dictionary item to be added to the datafile further down.
+    new_data = {
+        website_input.get(): {
+            "email": email_username_input.get(),
+            "password": password_input.get()
+        }
+    }
+
+    data.update(new_data)
+
+    with open(PASSWORD_FILE, "w") as data_file:
+        json.dump(data, data_file, indent=4)
+        success()
+
+    # Reset values on screen
     website_input.delete(0, END)
     email_username_input.delete(0, END)
     password_input.delete(0, END)
     length_input.set(0)
     website_input.focus()
-
-# # --------------------Change Slider Variable --------------------------- #
-# def slider_variable(value):
-#     length_label.config(text=value)
 
 # --------------------------- Success Dialog Box -------------------------- #
 # This is the dialog box that pops up when the end user clicks the add button to let them know the password was saved successfully
@@ -92,12 +118,11 @@ password_label.grid(column=0, row=4)
 
 
 # ----- Input Fields -----#
-
 # website entry
 website_text = StringVar()
-website_input = Entry(width=35, textvariable=website_text)
+website_input = Entry(width=18, textvariable=website_text)
 website_input.focus()
-website_input.grid(column=1, row=1, columnspan=2)
+website_input.grid(column=1, row=1)
 
 # username or email entry
 email_username_text = StringVar()
@@ -114,6 +139,9 @@ password_input = Entry(width=18, textvariable=password_text)
 password_input.grid(column=1, row=4)
 
 # ---- Buttons ----- #
+search_button = Button(width=10, text="Search", command=search_database)
+search_button.grid(column=2, row=1, columnspan=2)
+
 generate_password_button = Button(text="Generate Password", command=generate_password)
 generate_password_button.grid(column=2, row=4)
 
